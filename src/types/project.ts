@@ -4,6 +4,8 @@ import {Field, ObjectType, ID, InputType} from "type-graphql";
 export class Project {
   @Field(type => ID)
   id: string = "";
+  @Field(type => ID)
+  workspace_id: string = "";
   @Field()
   name: string = "";
   @Field()
@@ -28,6 +30,7 @@ export interface IDynamoProject {
 
 export interface IProject {
   id: string;
+  workspace_id: string;
   name: string;
   created: Date;
   updated: Date

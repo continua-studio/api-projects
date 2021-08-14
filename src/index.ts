@@ -67,7 +67,7 @@ class ProjectResolver {
   }
 
   formatProject(w:AttributeMap) {
-    return {id: w.key, name: w.name, created: w.created, updated: w.updated}
+    return {id: w.key, workspace_id: w.sort_key, name: w.name, created: w.created, updated: w.updated}
   }
 }
 
