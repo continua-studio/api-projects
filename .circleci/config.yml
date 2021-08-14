@@ -1,0 +1,64 @@
+# Use the latest 2.1 version of CircleCI pipeline processing engine, see https://circleci.com/docs/2.0/configuration-reference/
+version: 2.1
+jobs:
+  release:
+    parameters:
+      env:
+        type: string
+        default: development
+    docker:
+      - image: circleci/node:12
+    working_directory: ~/src
+    steps:
+      - checkout
+      - run:
+          name: Installing AWS CLI
+          command: |
+            sudo apt-get update
+            sudo apt-get install python-dev
+            sudo apt-get install python3-dev
+            sudo apt-get install python-pip
+            sudo apt-get install apache2-utils
+            sudo pip install awscli
+      - run:
+          name: 'Installing Dependencies'
+          command: |
+            npm install
+      - run:
+          name: Creating Build
+          command: |
+            ./node_modules/.bin/tsc
+      - run:
+          name: Creating Code Bundle
+          command: |
+            cd ./build && mv ../node_modules ./node_modules && zip -r bundle.zip ./
+      - run:
+          name: Updating Lambda Functions
+          command: |
+            aws lambda update-function-code \
+            --function-name=$AWS_LAMBDA_FUNCTION_NAME-<< parameters.env >> \
+            --zip-file=fileb://build/bundle.zip --region=$AWS_REGION
+workflows:
+  version: 2
+  release_client:
+    jobs:
+      - release:
+          filters:
+            branches:
+              only: /development/
+          env: 'development'
+      - release:
+          filters:
+            branches:
+              only: /uat/
+          env: 'uat'
+      - release:
+          filters:
+            branches:
+              only: /staging/
+          env: 'staging'
+      - release:
+          filters:
+            branches:
+              only: /main/
+          env: 'production'
