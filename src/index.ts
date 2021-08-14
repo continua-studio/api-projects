@@ -39,17 +39,17 @@ class ProjectResolver {
   }
 
   /**
-   *
+   * 
    * @param name
-   * @param user_id
+   * @param workspace_id
    */
   @Mutation(returns => Project)
-  async createProject(@Arg("name") name: string, @Arg("workspace_id") user_id: string) {
+  async createProject(@Arg("name") name: string, @Arg("workspace_id") workspace_id: string) {
     let params = {
       TableName: "projects",
       Item: {
         key: v4(),
-        sort_key: user_id,
+        sort_key: workspace_id,
         name,
         created: new Date().toISOString(),
         updated: new Date().toISOString()
@@ -61,11 +61,16 @@ class ProjectResolver {
     return {
       id: params.Item.key,
       name,
+      workspace_id,
       created: params.Item.created,
       updated: params.Item.updated
     };
   }
 
+  /**
+   *
+   * @param w
+   */
   formatProject(w:AttributeMap) {
     return {id: w.key, workspace_id: w.sort_key, name: w.name, created: w.created, updated: w.updated}
   }
