@@ -46,7 +46,7 @@ class ProjectResolver {
   @Mutation(returns => Project)
   async createProject(@Arg("name") name: string, @Arg("workspace_id") user_id: string) {
     let params = {
-      TableName: "workspaces",
+      TableName: "projects",
       Item: {
         key: v4(),
         sort_key: user_id,
